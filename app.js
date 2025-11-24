@@ -109,65 +109,24 @@ class UIController {
 
     static updateCitations(issue) {
         const citationsList = document.getElementById('citations-list');
-        const sources = issue.sources.split(';').map(s => s.trim());
 
-        citationsList.innerHTML = sources.map(source => {
-            const link = this.getSourceLink(source);
-            if (link) {
+        // Check if source_links exists and is not empty
+        if (!issue.source_links || issue.source_links.trim() === '') {
+            citationsList.innerHTML = `<div class="citation-item">${issue.sources}</div>`;
+            return;
+        }
+
+        const sources = issue.sources.split(';').map(s => s.trim());
+        const links = issue.source_links.split(';').map(s => s.trim());
+
+        citationsList.innerHTML = sources.map((source, index) => {
+            const link = links[index];
+            if (link && link !== '') {
                 return `<div class="citation-item"><a href="${link}" target="_blank" rel="noopener noreferrer">${source}</a></div>`;
             } else {
                 return `<div class="citation-item">${source}</div>`;
             }
         }).join('');
-    }
-
-    static getSourceLink(source) {
-        const lowerSource = source.toLowerCase();
-
-        // Map common sources to their websites
-        if (lowerSource.includes('pew research')) {
-            return 'https://www.pewresearch.org/';
-        }
-        if (lowerSource.includes('cdc')) {
-            return 'https://www.cdc.gov/';
-        }
-        if (lowerSource.includes('gallup')) {
-            return 'https://www.gallup.com/';
-        }
-        if (lowerSource.includes('kaiser family foundation')) {
-            return 'https://www.kff.org/';
-        }
-        if (lowerSource.includes('national academies')) {
-            return 'https://www.nationalacademies.org/';
-        }
-        if (lowerSource.includes('ipcc')) {
-            return 'https://www.ipcc.ch/';
-        }
-        if (lowerSource.includes('who')) {
-            return 'https://www.who.int/';
-        }
-        if (lowerSource.includes('ada') && lowerSource.includes('2023')) {
-            return 'https://www.ada.org/';
-        }
-        if (lowerSource.includes('aaas')) {
-            return 'https://www.aaas.org/';
-        }
-        if (lowerSource.includes('institute of medicine')) {
-            return 'https://www.nationalacademies.org/iom';
-        }
-        if (lowerSource.includes('icnirp')) {
-            return 'https://www.icnirp.org/';
-        }
-        if (lowerSource.includes('cochrane')) {
-            return 'https://www.cochrane.org/';
-        }
-
-        // For academic papers, try to construct DOI search links
-        if (lowerSource.includes('myers et al') && lowerSource.includes('2021')) {
-            return 'https://doi.org/10.1088/1748-9326/ac2966';
-        }
-
-        return null;
     }
 
     static showError(message) {
